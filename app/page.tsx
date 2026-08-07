@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as echarts from "echarts";
+import { ChinaData } from "china-map-geojson";
 
 type Snake = {
   id: string;
@@ -125,6 +127,100 @@ const provinces = [
   { name: "海南", x: 55, y: 96 }, { name: "台湾", x: 77, y: 85 },
 ];
 
+type ChinaMapProps = {
+  highlighted: string[];
+  selectedProvince: string;
+  mode: "snake" | "province";
+  onProvinceClick: (name: string) => void;
+};
+
+function ChinaMap({ highlighted, selectedProvince, mode, onProvinceClick }: ChinaMapProps) {
+  const elementRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<echarts.ECharts | null>(null);
+  const clickRef = useRef(onProvinceClick);
+  clickRef.current = onProvinceClick;
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+    echarts.registerMap("china-provinces", ChinaData as never);
+    const chart = echarts.init(elementRef.current, undefined, { renderer: "canvas" });
+    chartRef.current = chart;
+    chart.on("click", (params) => {
+      if (typeof params.name === "string" && params.name) clickRef.current(params.name);
+    });
+    const resize = () => chart.resize();
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+      chart.dispose();
+      chartRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const names = (ChinaData as { features: Array<{ properties: { name: string } }> }).features.map(
+      (feature) => feature.properties.name,
+    );
+    chart.setOption({
+      backgroundColor: "transparent",
+      tooltip: {
+        trigger: "item",
+        backgroundColor: "#152018",
+        borderWidth: 0,
+        padding: [8, 11],
+        textStyle: { color: "#f3f0e8", fontSize: 11 },
+        formatter: (params: { name: string }) => {
+          const count = snakes.filter((snake) => snake.provinces.includes(params.name)).length;
+          return `<b>${params.name}</b><br/><span style="color:#aeb6ad">原型收录 ${count} 种 · 点击查看</span>`;
+        },
+      },
+      series: [
+        {
+          type: "map",
+          map: "china-provinces",
+          roam: true,
+          scaleLimit: { min: 1, max: 4 },
+          zoom: 1.04,
+          top: 35,
+          bottom: 38,
+          left: 30,
+          right: 30,
+          selectedMode: false,
+          label: {
+            show: true,
+            color: "#475249",
+            fontSize: 9,
+            fontFamily: "Arial, Microsoft YaHei, sans-serif",
+          },
+          itemStyle: {
+            areaColor: "#ded9cc",
+            borderColor: "#69756d",
+            borderWidth: 0.75,
+          },
+          emphasis: {
+            label: { show: true, color: "#152018", fontWeight: "bold" },
+            itemStyle: { areaColor: "#b8cf65", borderColor: "#152018", borderWidth: 1.5 },
+          },
+          data: names.map((name) => {
+            const active = mode === "province" ? name === selectedProvince : highlighted.includes(name);
+            return {
+              name,
+              itemStyle: active
+                ? { areaColor: "#c8dc78", borderColor: "#234b34", borderWidth: 1.15 }
+                : undefined,
+              label: active ? { color: "#152018", fontWeight: "bold" } : undefined,
+            };
+          }),
+        },
+      ],
+    });
+  }, [highlighted, mode, selectedProvince]);
+
+  return <div className="china-map-chart" ref={elementRef} role="img" aria-label="中国省级行政区交互地图" />;
+}
+
 export default function Home() {
   const [activeSnakeId, setActiveSnakeId] = useState(snakes[0].id);
   const [activeProvince, setActiveProvince] = useState("福建");
@@ -216,28 +312,15 @@ export default function Home() {
           </div>
 
           <div className="map-wrap" aria-label="中国省级毒蛇分布交互示意图">
-            <div className="contour contour-one" />
-            <div className="contour contour-two" />
-            <div className="map-caption">点击省份查看当地收录蛇种</div>
-            <div className="province-map">
-              {provinces.map((province) => {
-                const hasSnake = activeSnake.provinces.includes(province.name);
-                const hasAny = snakes.some((snake) => snake.provinces.includes(province.name));
-                const active = mode === "province" ? activeProvince === province.name : hasSnake;
-                return (
-                  <button
-                    key={province.name}
-                    className={`province ${active ? "lit" : ""} ${!hasAny ? "empty" : ""}`}
-                    style={{ left: `${province.x}%`, top: `${province.y}%` }}
-                    onClick={() => chooseProvince(province.name)}
-                    aria-label={`${province.name}，${hasAny ? "有演示记录" : "暂无演示记录"}`}
-                  >
-                    <i />{province.name}
-                  </button>
-                );
-              })}
-            </div>
+            <div className="map-caption"><b>省级行政区地图</b><span>滚轮缩放 · 拖动查看 · 点击省份</span></div>
+            <ChinaMap
+              highlighted={activeSnake.provinces}
+              selectedProvince={activeProvince}
+              mode={mode}
+              onProvinceClick={chooseProvince}
+            />
             <div className="legend"><span><i className="confirmed" />演示记录</span><span><i />暂未收录</span></div>
+            <div className="map-data-note">公开 GeoJSON 绘制 · 边界仅用于交互原型</div>
           </div>
         </div>
 

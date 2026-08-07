@@ -73,23 +73,15 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .mode-switch button { border: 0; background: transparent; padding: 7px 12px; font-size: 10px; border-radius: 99px; cursor: pointer; color: var(--muted); }
 .mode-switch button.on { background: var(--ink); color: white; }
 .map-wrap { min-height: 610px; flex: 1; position: relative; overflow: hidden; background-image: radial-gradient(rgba(21,32,24,.13) .7px, transparent .7px); background-size: 15px 15px; }
-.map-caption { position: absolute; top: 25px; left: 30px; font-size: 9px; letter-spacing: .12em; color: var(--muted); }
-.province-map { position: absolute; width: min(92%, 760px); aspect-ratio: 1.28; left: 50%; top: 49%; transform: translate(-50%, -50%); border-radius: 50% 42% 52% 46%; background: radial-gradient(ellipse at 54% 56%, rgba(61,83,61,.06), transparent 65%); }
-.province { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; cursor: pointer; padding: 12px 4px 2px; font-size: 10px; min-width: 42px; color: #727a72; transition: transform .18s ease, color .18s ease; z-index: 2; }
-.province i { position: absolute; width: 8px; height: 8px; border: 1px solid #7c847c; border-radius: 50%; left: 50%; top: 2px; transform: translateX(-50%); background: var(--paper); }
-.province:hover { transform: translate(-50%, -50%) scale(1.15); color: var(--ink); z-index: 5; }
-.province.lit { color: var(--ink); font-weight: 700; }
-.province.lit i { width: 12px; height: 12px; top: 0; border-color: var(--green); background: var(--lime); box-shadow: 0 0 0 5px rgba(200,220,120,.22); }
-.province.empty { opacity: .46; }
-.province-map::before { content: ""; position: absolute; left: 7%; right: 4%; top: 9%; bottom: 2%; border: 1px solid rgba(35,75,52,.32); border-radius: 35% 51% 46% 44% / 43% 38% 53% 47%; transform: rotate(5deg); }
-.province-map::after { content: ""; position: absolute; width: 6%; height: 11%; right: 12%; bottom: 4%; border: 1px solid rgba(35,75,52,.28); border-radius: 50%; transform: rotate(14deg); }
-.contour { position: absolute; border: 1px solid rgba(21,32,24,.08); border-radius: 50%; }
-.contour-one { width: 560px; height: 460px; left: 50%; top: 49%; transform: translate(-50%,-50%) rotate(12deg); }
-.contour-two { width: 650px; height: 520px; left: 50%; top: 49%; transform: translate(-50%,-50%) rotate(-8deg); }
+.map-caption { position: absolute; top: 21px; left: 27px; z-index: 3; display: grid; gap: 4px; padding: 9px 11px; background: rgba(243,240,232,.88); border: 1px solid var(--line); backdrop-filter: blur(8px); }
+.map-caption b { font-size: 10px; letter-spacing: .08em; }
+.map-caption span { font-size: 8px; letter-spacing: .08em; color: var(--muted); }
+.china-map-chart { position: absolute; inset: 0; width: 100%; height: 100%; }
 .legend { position: absolute; bottom: 24px; left: 30px; display: flex; gap: 20px; font-size: 9px; color: var(--muted); }
 .legend span { display: flex; align-items: center; gap: 6px; }
 .legend i { width: 8px; height: 8px; border: 1px solid #7c847c; border-radius: 50%; display: inline-block; }
 .legend i.confirmed { background: var(--lime); border-color: var(--green); }
+.map-data-note { position: absolute; right: 25px; bottom: 22px; font-size: 8px; color: #7b847d; letter-spacing: .06em; pointer-events: none; }
 
 .detail-number { position: absolute; right: 25px; top: 19px; font: 64px Georgia, serif; color: rgba(21,32,24,.06); }
 .detail-kicker { display: block; margin-top: 68px; }
@@ -155,8 +147,9 @@ footer > span { font-size: 8px; letter-spacing: .12em; }
   .snake-row { grid-template-columns: 38px 1fr; }
   .map-toolbar { padding: 18px; flex-wrap: wrap; gap: 14px; }
   .map-wrap { min-height: 520px; }
-  .province-map { width: 115%; transform: translate(-50%,-50%) scale(.82); }
-  .contour-one, .contour-two { display: none; }
+  .china-map-chart { inset: 14px -32px 10px -32px; width: calc(100% + 64px); height: calc(100% - 24px); }
+  .map-caption { left: 14px; top: 14px; }
+  .map-data-note { right: 14px; bottom: 12px; }
   .detail-panel { min-height: 470px; padding: 26px; }
   .source-note { left: 26px; right: 26px; }
   .safety { padding: 38px 24px; }
