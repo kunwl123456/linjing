@@ -3,109 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { ChinaData } from "china-map-geojson";
-
-type Snake = {
-  id: string;
-  name: string;
-  latin: string;
-  family: string;
-  risk: "高危" | "较高";
-  tag: string;
-  accent: string;
-  provinces: string[];
-  note: string;
-};
-
-const snakes: Snake[] = [
-  {
-    id: "deinagkistrodon",
-    name: "尖吻蝮",
-    latin: "Deinagkistrodon acutus",
-    family: "蝰科",
-    risk: "高危",
-    tag: "五步蛇",
-    accent: "#d96545",
-    provinces: ["安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "重庆", "四川", "贵州"],
-    note: "多见于丘陵、山地林缘与溪沟附近。",
-  },
-  {
-    id: "gloydius",
-    name: "短尾蝮",
-    latin: "Gloydius brevicaudus",
-    family: "蝰科",
-    risk: "较高",
-    tag: "分布较广",
-    accent: "#9d6b49",
-    provinces: ["北京", "天津", "河北", "辽宁", "山东", "河南", "江苏", "安徽", "浙江", "江西", "湖北", "湖南", "陕西", "甘肃"],
-    note: "平原、丘陵与农田周边均可能出现。",
-  },
-  {
-    id: "naja",
-    name: "舟山眼镜蛇",
-    latin: "Naja atra",
-    family: "眼镜蛇科",
-    risk: "高危",
-    tag: "会扩颈",
-    accent: "#313c2e",
-    provinces: ["浙江", "安徽", "江西", "福建", "湖北", "湖南", "广东", "广西", "贵州", "重庆", "四川", "海南"],
-    note: "受威胁时可能抬起前身并扩张颈部。",
-  },
-  {
-    id: "ophiophagus",
-    name: "眼镜王蛇",
-    latin: "Ophiophagus hannah",
-    family: "眼镜蛇科",
-    risk: "高危",
-    tag: "大型毒蛇",
-    accent: "#566145",
-    provinces: ["浙江", "福建", "江西", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏"],
-    note: "主要栖息于南方山林，遇见时应保持远距离。",
-  },
-  {
-    id: "bungarus-multi",
-    name: "银环蛇",
-    latin: "Bungarus multicinctus",
-    family: "眼镜蛇科",
-    risk: "高危",
-    tag: "夜行性",
-    accent: "#3c5c68",
-    provinces: ["安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "海南", "贵州", "云南", "四川"],
-    note: "夜间活动较多，咬伤早期局部症状可能不明显。",
-  },
-  {
-    id: "bungarus-fasciatus",
-    name: "金环蛇",
-    latin: "Bungarus fasciatus",
-    family: "眼镜蛇科",
-    risk: "高危",
-    tag: "黑黄环纹",
-    accent: "#d2a83a",
-    provinces: ["福建", "江西", "广东", "广西", "海南", "贵州", "云南"],
-    note: "多在南方湿润区域活动，昼间常较隐蔽。",
-  },
-  {
-    id: "trimeresurus",
-    name: "福建竹叶青蛇",
-    latin: "Trimeresurus stejnegeri",
-    family: "蝰科",
-    risk: "较高",
-    tag: "树栖型",
-    accent: "#2f7653",
-    provinces: ["安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "贵州", "重庆", "四川", "云南", "台湾"],
-    note: "常隐蔽于灌木和低矮枝叶间，保护色明显。",
-  },
-  {
-    id: "protobothrops",
-    name: "原矛头蝮",
-    latin: "Protobothrops mucrosquamatus",
-    family: "蝰科",
-    risk: "高危",
-    tag: "山地常见",
-    accent: "#765c43",
-    provinces: ["浙江", "安徽", "江西", "福建", "湖北", "湖南", "广东", "广西", "海南", "贵州", "重庆", "四川", "云南", "台湾"],
-    note: "多活动于山地、林缘及岩石环境。",
-  },
-];
+import { snakes, venomFilters } from "./snake-data";
 
 const provinces = [
   { name: "新疆", x: 11, y: 31 }, { name: "西藏", x: 20, y: 61 },
@@ -226,15 +124,25 @@ export default function Home() {
   const [activeProvince, setActiveProvince] = useState("福建");
   const [mode, setMode] = useState<"snake" | "province">("snake");
   const [query, setQuery] = useState("");
+  const [venomFilter, setVenomFilter] = useState<(typeof venomFilters)[number]>("全部");
 
   const activeSnake = snakes.find((snake) => snake.id === activeSnakeId) ?? snakes[0];
   const provinceSnakes = useMemo(
     () => snakes.filter((snake) => snake.provinces.includes(activeProvince)),
     [activeProvince],
   );
-  const filteredSnakes = snakes.filter((snake) =>
-    `${snake.name}${snake.latin}${snake.tag}`.toLowerCase().includes(query.toLowerCase()),
-  );
+  const filteredSnakes = snakes.filter((snake) => {
+    const filterMatch = venomFilter === "全部"
+      || (venomFilter === "神经毒" && snake.venomClass === "neuro")
+      || (venomFilter === "血液/细胞毒" && snake.venomClass === "hemo")
+      || (venomFilter === "混合毒素" && snake.venomClass === "mixed")
+      || (venomFilter === "肌毒" && snake.venomClass === "myo")
+      || (venomFilter === "后沟牙" && snake.venomClass === "rear")
+      || (venomFilter === "无毒" && snake.venomClass === "none");
+    const searchMatch = `${snake.name}${snake.latin}${snake.tag}${snake.venomType}${snake.toxicity}`
+      .toLowerCase().includes(query.toLowerCase());
+    return filterMatch && searchMatch;
+  });
 
   function chooseSnake(id: string) {
     setActiveSnakeId(id);
@@ -251,7 +159,7 @@ export default function Home() {
       <header className="topbar">
         <a className="brand" href="#top" aria-label="鳞境首页">
           <span className="brand-mark" aria-hidden="true">S</span>
-          <span><b>鳞境</b><small>中国毒蛇科普图鉴</small></span>
+          <span><b>鳞境</b><small>中国蛇类安全科普图鉴</small></span>
         </a>
         <nav aria-label="主导航">
           <a className="active" href="#atlas">分布图鉴</a>
@@ -265,10 +173,10 @@ export default function Home() {
         <div className="eyebrow">CHINA VENOMOUS SNAKE ATLAS · 01</div>
         <div className="hero-copy">
           <h1>认识它，<em>不是为了靠近它。</em></h1>
-          <p>从一张地图出发，了解中国常见毒蛇的分布、习性与安全常识。</p>
+          <p>从一张地图出发，了解中国常见蛇类的分布、毒性机制与安全常识。</p>
         </div>
         <div className="hero-stat" aria-label="图鉴当前数据概览">
-          <strong>08</strong><span>首批重点<br />毒蛇档案</span>
+          <strong>{snakes.length}</strong><span>常见蛇类<br />解读档案</span>
           <b>34</b><span>省级行政区<br />交互索引</span>
         </div>
       </section>
@@ -276,13 +184,18 @@ export default function Home() {
       <section className="atlas" id="atlas">
         <aside className="species-panel">
           <div className="panel-heading">
-            <div><span>01 / SPECIES</span><h2>选择毒蛇</h2></div>
+            <div><span>01 / SPECIES</span><h2>选择蛇类</h2></div>
             <b>{String(filteredSnakes.length).padStart(2, "0")}</b>
           </div>
           <label className="search">
             <span aria-hidden="true">⌕</span>
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索中文名或学名" />
           </label>
+          <div className="venom-filters" aria-label="按毒性类型筛选">
+            {venomFilters.map((filter) => (
+              <button key={filter} className={venomFilter === filter ? "on" : ""} onClick={() => setVenomFilter(filter)}>{filter}</button>
+            ))}
+          </div>
           <div className="snake-list">
             {filteredSnakes.map((snake, index) => (
               <button
@@ -293,7 +206,7 @@ export default function Home() {
                 <span className="index">{String(index + 1).padStart(2, "0")}</span>
                 <span className="mini-scale" style={{ "--accent": snake.accent } as React.CSSProperties} aria-hidden="true" />
                 <span className="snake-title"><strong>{snake.name}</strong><i>{snake.latin}</i></span>
-                <span className={`risk ${snake.risk === "高危" ? "high" : ""}`}>{snake.risk}</span>
+                <span className={`risk ${snake.risk === "高危" ? "high" : ""} ${snake.risk === "无毒" ? "safe" : ""}`}>{snake.risk}</span>
               </button>
             ))}
           </div>
@@ -303,7 +216,7 @@ export default function Home() {
           <div className="map-toolbar">
             <div>
               <span>02 / DISTRIBUTION</span>
-              <h2>{mode === "snake" ? `${activeSnake.name} · 省级记录` : `${activeProvince} · 毒蛇索引`}</h2>
+              <h2>{mode === "snake" ? `${activeSnake.name} · 省级记录` : `${activeProvince} · 蛇类索引`}</h2>
             </div>
             <div className="mode-switch" role="group" aria-label="地图查看方式">
               <button className={mode === "snake" ? "on" : ""} onClick={() => setMode("snake")}>按蛇种</button>
@@ -331,11 +244,26 @@ export default function Home() {
               <span className="detail-kicker">SPECIES FILE</span>
               <h2>{activeSnake.name}</h2>
               <p className="latin">{activeSnake.latin}</p>
-              <div className="tags"><span>{activeSnake.family}</span><span>{activeSnake.tag}</span><span className="danger">{activeSnake.risk}</span></div>
+              <div className="tags"><span>{activeSnake.family}</span><span>{activeSnake.tag}</span><span className={activeSnake.risk === "无毒" ? "safe-tag" : "danger"}>{activeSnake.risk}</span></div>
               <p className="description">{activeSnake.note}</p>
+              <section className={`toxicity-card ${activeSnake.venomClass}`}>
+                <div className="toxicity-heading">
+                  <span>毒性类型</span><b>{activeSnake.venomType}</b>
+                </div>
+                <p>{activeSnake.toxinSystem}</p>
+              </section>
+              <section className="symptom-section">
+                <div className="section-label"><span>中毒 / 咬伤表现</span><i>表现因注毒量与个体差异而不同</i></div>
+                <ol>
+                  {activeSnake.symptoms.map((symptom, index) => (
+                    <li key={symptom.label}><b>{String(index + 1).padStart(2, "0")}</b><span><strong>{symptom.label}</strong>{symptom.text}</span></li>
+                  ))}
+                </ol>
+              </section>
+              <div className="medical-note"><b>临床提示</b><span>{activeSnake.medicalNote}</span></div>
               <dl>
                 <div><dt>演示分布</dt><dd>{activeSnake.provinces.length} 个省级地区</dd></div>
-                <div><dt>数据状态</dt><dd>待逐条核验</dd></div>
+                <div><dt>毒性归类</dt><dd>{activeSnake.toxicity}</dd></div>
               </dl>
               <button className="province-jump" onClick={() => { setActiveProvince(activeSnake.provinces[0]); setMode("province"); }}>
                 查看省份名录 <span>→</span>
@@ -346,18 +274,18 @@ export default function Home() {
               <div className="detail-number">{String(provinces.findIndex((p) => p.name === activeProvince) + 1).padStart(2, "0")}</div>
               <span className="detail-kicker">PROVINCE FILE</span>
               <h2>{activeProvince}</h2>
-              <p className="latin">当前原型收录 · {provinceSnakes.length} 种</p>
+              <p className="latin">当前图鉴收录 · {provinceSnakes.length} 种</p>
               <div className="province-list">
                 {provinceSnakes.length ? provinceSnakes.map((snake) => (
                   <button key={snake.id} onClick={() => chooseSnake(snake.id)}>
                     <span style={{ background: snake.accent }} />
-                    <b>{snake.name}</b><i>{snake.family}</i><em>→</em>
+                    <b>{snake.name}</b><i>{snake.venomType}</i><em>→</em>
                   </button>
                 )) : <p className="no-data">当前演示数据中暂无记录。<br />这不代表当地没有毒蛇。</p>}
               </div>
             </>
           )}
-          <div className="source-note">分布信息仅作界面演示，正式发布前将依据《中国蛇类》、中国动物主题数据库及省级更新名录逐条校订。</div>
+          <div className="source-note">毒性与症状按中国疾控中心公开科普和蛇伤临床共识归纳；不同蛇种、注毒量与个体反应差异很大，不能替代医疗诊断。分布记录仍将依据《中国蛇类》、中国动物主题数据库及省级名录继续校订。</div>
         </aside>
       </section>
 
@@ -372,8 +300,8 @@ export default function Home() {
       </section>
 
       <footer id="sources">
-        <div className="brand footer-brand"><span className="brand-mark">S</span><span><b>鳞境</b><small>中国毒蛇科普图鉴</small></span></div>
-        <p>首版交互原型 · 分布数据尚在校订中<br />不用于物种鉴定、野外捕捉或医疗诊断</p>
+        <div className="brand footer-brand"><span className="brand-mark">S</span><span><b>鳞境</b><small>中国蛇类安全科普图鉴</small></span></div>
+        <p>资料依据：中国疾控中心职业卫生与中毒控制所、蛇伤临床共识及动物学名录<br />不用于物种鉴定、野外捕捉或医疗诊断</p>
         <span>© 2026 SCALESCAPE</span>
       </footer>
     </main>

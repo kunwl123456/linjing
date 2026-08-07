@@ -43,16 +43,20 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .hero-stat b { color: var(--green); }
 .hero-stat span { font-size: 9px; line-height: 1.5; color: var(--muted); letter-spacing: .1em; }
 
-.atlas { min-height: 710px; display: grid; grid-template-columns: minmax(250px, 20%) 1fr minmax(260px, 22%); border-bottom: 1px solid var(--line); }
+.atlas { min-height: 820px; display: grid; grid-template-columns: minmax(260px, 21%) 1fr minmax(300px, 25%); border-bottom: 1px solid var(--line); }
 .species-panel, .detail-panel { border-right: 1px solid var(--line); min-width: 0; }
-.detail-panel { border-right: 0; border-left: 1px solid var(--line); padding: 32px; position: relative; background: rgba(255,255,255,.16); }
+.detail-panel { border-right: 0; border-left: 1px solid var(--line); padding: 32px; position: relative; background: rgba(255,255,255,.16); max-height: 820px; overflow-y: auto; scrollbar-width: thin; }
 .panel-heading, .map-toolbar { min-height: 100px; padding: 24px 26px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
 .panel-heading h2, .map-toolbar h2 { margin: 7px 0 0; font-family: Georgia, "Noto Serif SC", serif; font-size: 20px; font-weight: 500; }
 .panel-heading > b { font-family: Georgia, serif; font-size: 34px; font-weight: 400; color: rgba(21,32,24,.22); }
 .search { margin: 15px 18px; height: 40px; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--ink); }
 .search span { font-size: 22px; transform: rotate(-20deg); }
 .search input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 12px; color: var(--ink); }
-.snake-list { max-height: 540px; overflow-y: auto; scrollbar-width: thin; }
+.venom-filters { display: flex; gap: 5px; padding: 0 17px 14px; overflow-x: auto; scrollbar-width: none; }
+.venom-filters::-webkit-scrollbar { display: none; }
+.venom-filters button { flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 99px; padding: 5px 8px; font-size: 8px; cursor: pointer; }
+.venom-filters button.on { background: var(--green); color: #fff; border-color: var(--green); }
+.snake-list { max-height: 615px; overflow-y: auto; scrollbar-width: thin; }
 .snake-row { width: 100%; min-height: 61px; padding: 9px 14px; display: grid; grid-template-columns: 26px 38px 1fr auto; gap: 7px; align-items: center; border: 0; border-top: 1px solid rgba(21,32,24,.09); background: transparent; cursor: pointer; text-align: left; transition: .2s ease; position: relative; }
 .snake-row:hover { background: rgba(255,255,255,.34); }
 .snake-row.selected { background: var(--ink); color: #f5f0e5; }
@@ -66,13 +70,14 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .risk { font-size: 8px; border: 1px solid currentColor; border-radius: 9px; padding: 3px 5px; color: #6a766c; }
 .selected .risk { color: var(--lime); }
 .risk.high { color: var(--orange); }
+.risk.safe { color: #47765b; }
 
 .map-panel { min-width: 0; display: flex; flex-direction: column; }
 .map-toolbar { padding-left: 32px; padding-right: 32px; }
 .mode-switch { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 99px; }
 .mode-switch button { border: 0; background: transparent; padding: 7px 12px; font-size: 10px; border-radius: 99px; cursor: pointer; color: var(--muted); }
 .mode-switch button.on { background: var(--ink); color: white; }
-.map-wrap { min-height: 610px; flex: 1; position: relative; overflow: hidden; background-image: radial-gradient(rgba(21,32,24,.13) .7px, transparent .7px); background-size: 15px 15px; }
+.map-wrap { min-height: 720px; flex: 1; position: relative; overflow: hidden; background-image: radial-gradient(rgba(21,32,24,.13) .7px, transparent .7px); background-size: 15px 15px; }
 .map-caption { position: absolute; top: 21px; left: 27px; z-index: 3; display: grid; gap: 4px; padding: 9px 11px; background: rgba(243,240,232,.88); border: 1px solid var(--line); backdrop-filter: blur(8px); }
 .map-caption b { font-size: 10px; letter-spacing: .08em; }
 .map-caption span { font-size: 8px; letter-spacing: .08em; color: var(--muted); }
@@ -90,14 +95,35 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .tags span { padding: 5px 8px; border: 1px solid var(--line); font-size: 9px; border-radius: 2px; }
 .tags .danger { color: var(--orange); border-color: color-mix(in srgb, var(--orange), transparent 45%); }
-.description { margin: 25px 0; font: 15px/1.85 Georgia, "Noto Serif SC", serif; }
-.detail-panel dl { border-top: 1px solid var(--line); margin-top: 28px; }
+.tags .safe-tag { color: #34704e; border-color: rgba(52,112,78,.45); }
+.description { margin: 22px 0; font: 14px/1.75 Georgia, "Noto Serif SC", serif; }
+.toxicity-card { padding: 14px; border: 1px solid var(--line); border-left: 4px solid #8c6847; background: rgba(255,255,255,.28); }
+.toxicity-card.neuro { border-left-color: #526f92; }
+.toxicity-card.mixed { border-left-color: #9d5546; }
+.toxicity-card.myo { border-left-color: #517b81; }
+.toxicity-card.rear { border-left-color: #8a7543; }
+.toxicity-card.none { border-left-color: #4c7d5d; }
+.toxicity-heading { display: grid; gap: 6px; }
+.toxicity-heading span, .section-label span { font-size: 8px; letter-spacing: .16em; color: var(--muted); font-weight: 700; }
+.toxicity-heading b { font: 500 14px/1.35 Georgia, "Noto Serif SC", serif; }
+.toxicity-card p { margin: 8px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.symptom-section { margin-top: 20px; }
+.section-label { display: flex; justify-content: space-between; align-items: end; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.section-label i { font-size: 7px; font-style: normal; color: #8a908a; text-align: right; }
+.symptom-section ol { list-style: none; padding: 0; margin: 0; }
+.symptom-section li { display: grid; grid-template-columns: 25px 1fr; gap: 9px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.symptom-section li > b { font: 15px Georgia, serif; color: #9ba19b; }
+.symptom-section li span { font-size: 9px; line-height: 1.65; color: var(--muted); }
+.symptom-section li strong { display: block; color: var(--ink); font-size: 10px; margin-bottom: 2px; }
+.medical-note { margin-top: 14px; display: grid; grid-template-columns: auto 1fr; gap: 9px; padding: 10px; background: rgba(217,101,69,.09); font-size: 9px; line-height: 1.55; }
+.medical-note b { color: var(--orange); white-space: nowrap; }
+.detail-panel dl { border-top: 1px solid var(--line); margin-top: 18px; }
 .detail-panel dl div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 13px 0; font-size: 10px; }
 .detail-panel dt { color: var(--muted); }
 .detail-panel dd { margin: 0; font-weight: 700; }
 .province-jump { width: 100%; margin-top: 22px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--ink); background: transparent; text-align: left; font-size: 11px; cursor: pointer; }
 .province-jump span { float: right; font-size: 18px; }
-.source-note { position: absolute; left: 32px; right: 32px; bottom: 25px; font-size: 8px; color: #838a83; line-height: 1.6; border-left: 2px solid var(--orange); padding-left: 9px; }
+.source-note { margin-top: 28px; font-size: 8px; color: #838a83; line-height: 1.65; border-left: 2px solid var(--orange); padding-left: 9px; }
 .province-list { margin-top: 28px; border-top: 1px solid var(--line); max-height: 325px; overflow-y: auto; }
 .province-list button { width: 100%; display: grid; grid-template-columns: 9px 1fr auto auto; gap: 8px; align-items: center; padding: 13px 3px; border: 0; border-bottom: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; }
 .province-list button > span { width: 7px; height: 7px; border-radius: 50%; }
@@ -123,8 +149,8 @@ footer > span { font-size: 8px; letter-spacing: .12em; }
 
 @media (max-width: 1050px) {
   .atlas { grid-template-columns: 250px 1fr; }
-  .detail-panel { grid-column: 1 / -1; min-height: 380px; border-left: 0; border-top: 1px solid var(--line); display: block; }
-  .source-note { max-width: 450px; }
+  .detail-panel { grid-column: 1 / -1; min-height: 380px; max-height: none; border-left: 0; border-top: 1px solid var(--line); display: block; }
+  .source-note { max-width: 650px; }
   .safety { grid-template-columns: 1fr; }
   .safety ol { margin: 15px 0; }
   .emergency { border-left: 0; padding-left: 0; }
@@ -151,7 +177,6 @@ footer > span { font-size: 8px; letter-spacing: .12em; }
   .map-caption { left: 14px; top: 14px; }
   .map-data-note { right: 14px; bottom: 12px; }
   .detail-panel { min-height: 470px; padding: 26px; }
-  .source-note { left: 26px; right: 26px; }
   .safety { padding: 38px 24px; }
   .safety ol { grid-template-columns: 1fr; }
   footer { grid-template-columns: 1fr; gap: 24px; align-items: start; }
