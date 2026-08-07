@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { ChinaData } from "china-map-geojson";
-import { snakes, venomFilters } from "./snake-data";
+import { snakeAppearances, snakes, venomFilters } from "./snake-data";
 
 const provinces = [
   { name: "新疆", x: 11, y: 31 }, { name: "西藏", x: 20, y: 61 },
@@ -127,6 +127,7 @@ export default function Home() {
   const [venomFilter, setVenomFilter] = useState<(typeof venomFilters)[number]>("全部");
 
   const activeSnake = snakes.find((snake) => snake.id === activeSnakeId) ?? snakes[0];
+  const activeAppearance = snakeAppearances[activeSnake.id];
   const provinceSnakes = useMemo(
     () => snakes.filter((snake) => snake.provinces.includes(activeProvince)),
     [activeProvince],
@@ -246,6 +247,13 @@ export default function Home() {
               <p className="latin">{activeSnake.latin}</p>
               <div className="tags"><span>{activeSnake.family}</span><span>{activeSnake.tag}</span><span className={activeSnake.risk === "无毒" ? "safe-tag" : "danger"}>{activeSnake.risk}</span></div>
               <p className="description">{activeSnake.note}</p>
+              <section className="appearance-section">
+                <div className="section-label"><span>外观与远距离辨识</span><i>不可作为徒手鉴蛇依据</i></div>
+                <p className="appearance-copy">{activeAppearance.appearance}</p>
+                <div className="identity-point"><b>辨识提示</b><span>{activeAppearance.distinguishing}</span></div>
+                <div className="lookalike-point"><b>易混淆</b><span>{activeAppearance.lookalikes}</span></div>
+                <div className="identity-warning">只在安全距离观察或拍照。不要靠近查看瞳孔、牙齿、颊窝或腹面，也不要刺激蛇扩颈来确认种类。</div>
+              </section>
               <section className={`toxicity-card ${activeSnake.venomClass}`}>
                 <div className="toxicity-heading">
                   <span>毒性类型</span><b>{activeSnake.venomType}</b>
