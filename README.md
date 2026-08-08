@@ -1,98 +1,65 @@
-# vinext-starter
+# 鳞境｜中国蛇类安全科普图鉴
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+一个以中国省级地图为入口的纯前端蛇类科普网站。可以按蛇种查看省级分布，也可以点击省份浏览当前图鉴收录的蛇类，并阅读外观、易混淆种、毒性机制、中毒表现和医院常查指标。
 
-## Prerequisites
+在线访问：[snake-atlas-china.sebastianklx6.chatgpt.site](https://snake-atlas-china.sebastianklx6.chatgpt.site)
 
-- Node.js `>=22.13.0`
+## 功能
 
-## Quick Start
+- 中国省级行政区交互地图，支持缩放、拖动和键盘选择
+- 47 种中国常见蛇类档案
+- 按蛇种与按省份双向索引
+- 神经毒、血液/细胞毒、混合毒、肌毒、后沟牙与无毒分类
+- 外观特征、易混淆种和远距离辨识提示
+- 中毒症状、临床提示及医院常查指标
+- 136 张本地 AVIF/WebP 图片，提供作者、许可和原始来源
+- 响应式布局与图片懒加载
+
+## 重要说明
+
+本项目用于安全科普，不用于现场物种鉴定、捕捉指导或医疗诊断。省级分布仍是持续校订中的演示数据，不代表完整调查结果，也不能据此断言某地不存在某种蛇。
+
+疑似毒蛇咬伤时，不要等待网页鉴定或自行解读化验结果，应减少活动并立即联系 120 或前往具备蛇伤救治能力的医院。
+
+## 本地运行
+
+需要 Node.js `>=22.13.0`。
 
 ```bash
 npm install
 npm run dev
+```
+
+浏览器访问 `http://localhost:3000/`。
+
+生产构建：
+
+```bash
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## 项目结构
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```text
+app/
+  page.tsx          页面交互与内容布局
+  china-map.tsx     中国省级 GeoJSON 地图
+  snake-data.ts     蛇种、分布、症状与医疗指标数据
+  snake-images.ts   图片来源与许可元数据
+  globals.css       页面样式
+public/snakes/      本地 AVIF/WebP 图片
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## 资料与图片
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+医疗科普主要参考国家卫健委《常见动物致伤诊疗规范（2021年版）》和 WHO《Guidelines for the management of snakebites, 2nd edition》。图片主要来自 iNaturalist、Wikimedia Commons 与台湾生物多样性网络。
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+每张图片的作者、来源和许可证见 [IMAGE_LICENSES.md](IMAGE_LICENSES.md)。地图数据来自 `china-map-geojson`，该软件包采用 ISC 许可证。
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+## 参与贡献
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+欢迎提交分布资料勘误、物种分类更新、可靠图片来源和无障碍改进。提交前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，涉及分布或医疗信息的修改必须附可核验来源。
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+## 许可证
 
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+源代码采用 [MIT License](LICENSE)。`public/snakes/` 中的第三方图片不适用 MIT License，仍分别受 [IMAGE_LICENSES.md](IMAGE_LICENSES.md) 所列许可证约束。
