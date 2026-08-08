@@ -65,25 +65,44 @@ export default function ChinaMap({
   onProvinceClick,
 }: ChinaMapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const dragRef = useRef<{ clientX: number; clientY: number; x: number; y: number } | null>(null);
+  const dragRef = useRef<{
+    clientX: number;
+    clientY: number;
+    x: number;
+    y: number;
+    moved: boolean;
+    province: string | null;
+  } | null>(null);
   const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
   const highlightedSet = useMemo(() => new Set(highlighted), [highlighted]);
 
   function startDrag(event: React.PointerEvent<SVGSVGElement>) {
     if (event.button !== 0) return;
+    const province = (event.target as Element).closest<SVGGElement>("[data-province]")?.dataset.province ?? null;
     event.currentTarget.setPointerCapture(event.pointerId);
-    dragRef.current = { clientX: event.clientX, clientY: event.clientY, x: view.x, y: view.y };
+    dragRef.current = { clientX: event.clientX, clientY: event.clientY, x: view.x, y: view.y, moved: false, province };
   }
 
   function drag(event: React.PointerEvent<SVGSVGElement>) {
     if (!dragRef.current || !svgRef.current) return;
+    const pixelDx = event.clientX - dragRef.current.clientX;
+    const pixelDy = event.clientY - dragRef.current.clientY;
+    if (!dragRef.current.moved && Math.hypot(pixelDx, pixelDy) < 5) return;
+    dragRef.current.moved = true;
     const rect = svgRef.current.getBoundingClientRect();
-    const dx = (event.clientX - dragRef.current.clientX) * (VIEW_WIDTH / rect.width);
-    const dy = (event.clientY - dragRef.current.clientY) * (VIEW_HEIGHT / rect.height);
+    const dx = pixelDx * (VIEW_WIDTH / rect.width);
+    const dy = pixelDy * (VIEW_HEIGHT / rect.height);
     setView((current) => ({ ...current, x: dragRef.current!.x + dx, y: dragRef.current!.y + dy }));
   }
 
   function stopDrag(event: React.PointerEvent<SVGSVGElement>) {
+    const selected = dragRef.current && !dragRef.current.moved ? dragRef.current.province : null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    dragRef.current = null;
+    if (selected) onProvinceClick(selected);
+  }
+
+  function cancelDrag(event: React.PointerEvent<SVGSVGElement>) {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     dragRef.current = null;
   }
@@ -104,7 +123,7 @@ export default function ChinaMap({
       onPointerDown={startDrag}
       onPointerMove={drag}
       onPointerUp={stopDrag}
-      onPointerCancel={stopDrag}
+      onPointerCancel={cancelDrag}
       onWheel={zoom}
     >
       <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
@@ -116,12 +135,15 @@ export default function ChinaMap({
             <g
               className={`map-province ${active ? "active" : ""}`}
               key={feature.name}
+              data-province={feature.name}
               role="button"
               tabIndex={0}
               aria-label={`${feature.name}，图鉴收录 ${provinceCounts[feature.name] ?? 0} 种`}
-              onClick={() => onProvinceClick(feature.name)}
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") onProvinceClick(feature.name);
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onProvinceClick(feature.name);
+                }
               }}
             >
               <title>{feature.name} · 图鉴收录 {provinceCounts[feature.name] ?? 0} 种 · 点击查看</title>
