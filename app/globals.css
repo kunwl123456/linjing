@@ -155,6 +155,19 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .symptom-section li strong { display: block; color: var(--ink); font-size: 10px; margin-bottom: 2px; }
 .medical-note { margin-top: 14px; display: grid; grid-template-columns: auto 1fr; gap: 9px; padding: 10px; background: rgba(217,101,69,.09); font-size: 9px; line-height: 1.55; }
 .medical-note b { color: var(--orange); white-space: nowrap; }
+.clinical-monitor { margin-top: 18px; padding-top: 2px; }
+.monitor-intro { margin: 10px 0; color: var(--muted); font-size: 8px; line-height: 1.65; }
+.monitor-list { border-top: 1px solid var(--line); }
+.monitor-list article { display: grid; grid-template-columns: 68px 1fr; gap: 4px 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.monitor-list article b { grid-row: 1 / 3; color: var(--orange); font-size: 9px; letter-spacing: .04em; }
+.monitor-list article strong { font-size: 9px; line-height: 1.5; }
+.monitor-list article span { color: var(--muted); font-size: 8px; line-height: 1.6; }
+.clinical-monitor small { display: block; margin-top: 10px; padding: 9px 10px; border: 1px dashed rgba(162,86,63,.35); color: #785a4f; background: rgba(217,101,69,.045); font-size: 7px; line-height: 1.65; }
+.monitor-sources { margin: 7px 0 0; color: #858b85; font-size: 7px; line-height: 1.6; }
+.monitor-sources a { color: inherit; text-underline-offset: 2px; }
+.clinical-monitor.neuro .monitor-list article b { color: #526f92; }
+.clinical-monitor.myo .monitor-list article b { color: #517b81; }
+.clinical-monitor.none .monitor-list article b { color: #4c7d5d; }
 .detail-panel dl { border-top: 1px solid var(--line); margin-top: 18px; }
 .detail-panel dl div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 13px 0; font-size: 10px; }
 .detail-panel dt { color: var(--muted); }

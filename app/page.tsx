@@ -1,7 +1,7 @@
 "use client";
 
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { snakeAppearances, snakes, venomFilters } from "./snake-data";
+import { clinicalChecks, snakeAppearances, snakes, venomFilters } from "./snake-data";
 import { snakeImages } from "./snake-images";
 
 const ChinaMap = lazy(() => import("./china-map"));
@@ -258,6 +258,21 @@ export default function Home() {
                 </ol>
               </section>
               <div className="medical-note"><b>临床提示</b><span>{activeSnake.medicalNote}</span></div>
+              <section className={`clinical-monitor ${activeSnake.venomClass}`}>
+                <div className="section-label"><span>医院常查指标</span><i>项目与频率由接诊医生决定</i></div>
+                <p className="monitor-intro">疑似毒蛇咬伤可能在数小时后才出现异常，首次验血正常不能自行排除中毒，医院通常会结合症状和趋势决定是否复查。</p>
+                <div className="monitor-list">
+                  {clinicalChecks[activeSnake.venomClass].map((check) => (
+                    <article key={check.label}>
+                      <b>{check.label}</b>
+                      <strong>{check.tests}</strong>
+                      <span>{check.meaning}</span>
+                    </article>
+                  ))}
+                </div>
+                <small>本栏用于帮助理解医院检查，不提供个人化诊断、检验单解读或自行用药依据。出现呼吸困难、意识改变、异常出血、少尿或肿胀快速扩大应立即急诊处理。</small>
+                <p className="monitor-sources">参考：<a href="https://www.gov.cn/zhengce/zhengceku/2021-08/07/5630006/files/56d5a6d60dc94b33bbe66beba007d201.pdf" target="_blank" rel="noreferrer">国家卫健委《常见动物致伤诊疗规范（2021年版）》</a>、<a href="https://www.who.int/publications/i/item/9789290225300" target="_blank" rel="noreferrer">WHO 蛇咬伤管理指南（第2版）</a></p>
+              </section>
               <dl>
                 <div><dt>演示分布</dt><dd>{activeSnake.provinces.length} 个省级地区</dd></div>
                 <div><dt>毒性归类</dt><dd>{activeSnake.toxicity}</dd></div>
