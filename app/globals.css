@@ -81,7 +81,16 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .map-caption { position: absolute; top: 21px; left: 27px; z-index: 3; display: grid; gap: 4px; padding: 9px 11px; background: rgba(243,240,232,.88); border: 1px solid var(--line); backdrop-filter: blur(8px); }
 .map-caption b { font-size: 10px; letter-spacing: .08em; }
 .map-caption span { font-size: 8px; letter-spacing: .08em; color: var(--muted); }
-.china-map-chart { position: absolute; inset: 0; width: 100%; height: 100%; }
+.china-map-chart { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; user-select: none; }
+.china-map-chart:active { cursor: grabbing; }
+.map-province { cursor: pointer; outline: none; }
+.map-province path { fill: #ded9cc; stroke: #69756d; stroke-width: .75; transition: fill .16s ease, stroke .16s ease; }
+.map-province text { fill: #475249; font: 9px Arial, "Microsoft YaHei", sans-serif; pointer-events: none; paint-order: stroke; stroke: rgba(243,240,232,.75); stroke-width: 2px; }
+.map-province:hover path, .map-province:focus-visible path { fill: #b8cf65; stroke: #152018; stroke-width: 1.5; }
+.map-province:hover text, .map-province:focus-visible text, .map-province.active text { fill: #152018; font-weight: 700; }
+.map-province.active path { fill: #c8dc78; stroke: #234b34; stroke-width: 1.15; }
+.map-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 11px; letter-spacing: .12em; }
+.map-loading::before { content: ""; width: 42px; height: 42px; position: absolute; border: 1px solid var(--line); border-top-color: var(--green); border-radius: 50%; animation: map-loading 1s linear infinite; }
 .legend { position: absolute; bottom: 24px; left: 30px; display: flex; gap: 20px; font-size: 9px; color: var(--muted); }
 .legend span { display: flex; align-items: center; gap: 6px; }
 .legend i { width: 8px; height: 8px; border: 1px solid #7c847c; border-radius: 50%; display: inline-block; }
@@ -97,6 +106,28 @@ nav a.active::after { content: ""; position: absolute; height: 3px; width: 24px;
 .tags .danger { color: var(--orange); border-color: color-mix(in srgb, var(--orange), transparent 45%); }
 .tags .safe-tag { color: #34704e; border-color: rgba(52,112,78,.45); }
 .description { margin: 22px 0; font: 14px/1.75 Georgia, "Noto Serif SC", serif; }
+.snake-photo-card { margin: 0 0 22px; border: 1px solid var(--line); background: rgba(255,255,255,.28); }
+.snake-photo-frame { aspect-ratio: 4 / 3; position: relative; overflow: hidden; background: #d8d4c9; }
+.snake-photo-frame picture, .snake-photo-frame img { display: block; width: 100%; height: 100%; }
+.snake-photo-frame img { object-fit: cover; }
+.snake-photo-frame > span { position: absolute; left: 8px; top: 8px; padding: 5px 7px; background: rgba(21,32,24,.82); color: #f3f0e8; font-size: 7px; letter-spacing: .1em; }
+.photo-arrows { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 4px; }
+.photo-arrows button { width: 29px; height: 29px; border: 1px solid rgba(255,255,255,.45); background: rgba(21,32,24,.82); color: white; cursor: pointer; }
+.photo-arrows button:hover, .photo-arrows button:focus-visible { background: var(--lime); color: var(--ink); }
+.snake-photo-card figcaption { padding: 10px 11px 11px; }
+.snake-photo-card figcaption > div { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.snake-photo-card figcaption b { font-size: 10px; }
+.snake-photo-card figcaption span { color: var(--muted); font-size: 8px; }
+.snake-photo-card figcaption p { margin: 7px 0 5px; font-size: 8px; line-height: 1.55; color: var(--muted); }
+.snake-photo-card figcaption a { color: var(--green); text-underline-offset: 2px; }
+.snake-photo-card .observation-link { float: right; font-weight: 700; }
+.photo-pagination { display: flex; gap: 5px; margin: 8px 0; }
+.photo-pagination button { flex: 1; padding: 5px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 9px Georgia, serif; cursor: pointer; }
+.photo-pagination button.on { background: var(--ink); border-color: var(--ink); color: var(--lime); }
+.snake-photo-card figcaption small { display: block; padding-top: 7px; border-top: 1px solid var(--line); color: #7e857e; font-size: 7px; line-height: 1.55; }
+.photo-pending { margin: 0 0 22px; padding: 13px; display: grid; gap: 5px; border: 1px dashed var(--line); color: var(--muted); }
+.photo-pending b { color: var(--ink); font-size: 9px; }
+.photo-pending span { font-size: 8px; line-height: 1.55; }
 .appearance-section { margin: 0 0 20px; }
 .appearance-copy { margin: 12px 0; font-size: 10px; line-height: 1.75; color: #4e5a51; }
 .identity-point, .lookalike-point { display: grid; grid-template-columns: 48px 1fr; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 9px; line-height: 1.65; }
@@ -153,6 +184,10 @@ footer { padding: 28px 4vw; display: grid; grid-template-columns: 1fr 1fr auto; 
 .footer-brand { color: white; }
 footer p { margin: 0; font-size: 9px; line-height: 1.7; }
 footer > span { font-size: 8px; letter-spacing: .12em; }
+
+.safety, footer { content-visibility: auto; contain-intrinsic-size: 260px; }
+
+@keyframes map-loading { to { transform: rotate(360deg); } }
 
 @media (max-width: 1050px) {
   .atlas { grid-template-columns: 250px 1fr; }

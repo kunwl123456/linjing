@@ -54,6 +54,12 @@ const rearSymptoms: SymptomItem[] = [
   { label: "严重表现", text: "少数严重中毒可发生广泛出血、贫血、低血压或急性肾损伤，需要医院连续监测凝血指标。" },
 ];
 
+const mildRearSymptoms: SymptomItem[] = [
+  { label: "伤口表现", text: "多数咬伤以牙痕、局部疼痛、轻度肿胀或麻木为主；后沟牙位于口腔后方，持续咬合可能增加分泌物进入伤口的机会。" },
+  { label: "可能反应", text: "少数人可能出现较明显的局部肿胀、瘀斑、恶心或过敏样反应，但这些蛇目前没有典型的严重全身中毒综合征。" },
+  { label: "处理原则", text: "仍应清洗伤口并观察；若肿胀持续扩大、疼痛加重、出现全身不适或蛇种不能确认，应携带远距离照片尽快就医。" },
+];
+
 const nonVenomSymptoms: SymptomItem[] = [
   { label: "毒性判断", text: "没有用于向人注入蛇毒的毒牙系统，通常不会产生蛇毒导致的神经、凝血或肌肉中毒综合征。" },
   { label: "咬伤表现", text: "仍可能造成多排浅牙痕、局部疼痛、出血、肿胀或软组织损伤，大型个体咬合可造成较深创口。" },
@@ -216,7 +222,7 @@ export const snakes: Snake[] = [
     medicalNote: "无蛇毒中毒风险，但任何野生蛇咬伤仍应妥善清洁并观察伤口。",
   },
   {
-    id: "orthriophis-taeniurus", name: "黑眉锦蛇", latin: "Orthriophis taeniurus", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    id: "orthriophis-taeniurus", name: "黑眉锦蛇", latin: "Elaphe taeniura", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
     venomType: "无蛇毒注入", toxinSystem: "无毒牙系统，通过咬合和缠绕捕食",
     tag: "常近人居", accent: "#7a674b", provinces: ["河北", "河南", "山东", "江苏", "安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "海南", "重庆", "四川", "贵州", "云南", "陕西"],
     note: "有时出现在房舍、仓库或农田附近，主要捕食鼠类。", symptoms: nonVenomSymptoms,
@@ -244,7 +250,7 @@ export const snakes: Snake[] = [
     medicalNote: "一般不造成蛇毒中毒，但伤口仍需清洁和观察。",
   },
   {
-    id: "orientocoluber-spinalis", name: "白条锦蛇", latin: "Orientocoluber spinalis", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    id: "elaphe-dione", name: "白条锦蛇", latin: "Elaphe dione", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
     venomType: "无蛇毒注入", toxinSystem: "无毒牙系统",
     tag: "北方常见", accent: "#756f62", provinces: ["新疆", "青海", "甘肃", "宁夏", "内蒙古", "黑龙江", "吉林", "辽宁", "北京", "河北", "山西", "山东", "河南", "陕西"],
     note: "在北方草原、农田和山地较常见，背部常有浅色纵纹。", symptoms: nonVenomSymptoms,
@@ -256,6 +262,139 @@ export const snakes: Snake[] = [
     tag: "小型锦蛇", accent: "#816854", provinces: ["北京", "河北", "山西", "山东", "河南", "江苏", "安徽", "浙江", "湖北", "四川", "陕西", "甘肃"],
     note: "体型较小，多见于丘陵、田野和灌丛环境。", symptoms: nonVenomSymptoms,
     medicalNote: "不会引起蛇毒中毒，咬伤主要按普通动物咬伤处理。",
+  },
+  {
+    id: "sinomicrurus-macclellandi", name: "中华珊瑚蛇", latin: "Sinomicrurus macclellandi", family: "眼镜蛇科", risk: "高危", toxicity: "有毒", venomClass: "neuro",
+    venomType: "神经毒为主", toxinSystem: "可阻断神经肌肉信号传递，局部反应不一定明显",
+    tag: "红黑环纹", accent: "#b64b3f", provinces: ["福建", "江西", "湖南", "广东", "广西", "海南", "贵州", "云南", "西藏", "台湾", "香港"],
+    note: "体型通常不大且生活隐蔽，但属于眼镜蛇科；鲜艳环纹不能作为可触摸或无害的判断依据。", symptoms: neuroSymptoms,
+    medicalNote: "公开病例相对少，但疑似咬伤应按神经毒蛇伤处理，重点监测吞咽和呼吸功能。",
+  },
+  {
+    id: "protobothrops-jerdonii", name: "菜花原矛头蝮", latin: "Protobothrops jerdonii", family: "蝰科", risk: "高危", toxicity: "有毒", venomClass: "hemo",
+    venomType: "血液毒、凝血毒与细胞毒", toxinSystem: "损害凝血系统、血管和局部软组织",
+    tag: "西南山地", accent: "#78654b", provinces: ["甘肃", "青海", "四川", "云南", "西藏"],
+    note: "多见于西南和青藏高原东南缘的山地环境，斑纹与碎石、落叶背景接近。", symptoms: hemoSymptoms,
+    medicalNote: "咬伤可出现进行性肿胀、出血和凝血异常，应尽早进行蛇伤专科评估。",
+  },
+  {
+    id: "gloydius-strauchi", name: "高原蝮", latin: "Gloydius strauchi", family: "蝰科", risk: "较高", toxicity: "有毒", venomClass: "hemo",
+    venomType: "血液毒与细胞毒为主", toxinSystem: "影响凝血、微循环和局部组织",
+    tag: "高海拔", accent: "#716b58", provinces: ["甘肃", "青海", "四川", "云南", "西藏"],
+    note: "主要生活在高原草甸、石坡和河谷等环境，相关类群分类和分布仍可能随研究调整。", symptoms: hemoSymptoms,
+    medicalNote: "高海拔环境会增加转运难度，疑似咬伤应立即联系急救而不是等待症状。",
+  },
+  {
+    id: "vipera-berus", name: "极北蝰", latin: "Vipera berus", family: "蝰科", risk: "较高", toxicity: "有毒", venomClass: "hemo",
+    venomType: "血液毒与细胞毒", toxinSystem: "造成局部组织损伤，并可影响循环和凝血",
+    tag: "新疆北部", accent: "#5e5f59", provinces: ["新疆"],
+    note: "我国记录主要位于新疆北部，体色变异很大，部分个体可接近全黑。", symptoms: hemoSymptoms,
+    medicalNote: "可能发生明显肿胀、低血压和全身反应，儿童及基础疾病患者尤其需要严密观察。",
+  },
+  {
+    id: "laticauda-laticaudata", name: "蓝灰扁尾海蛇", latin: "Laticauda laticaudata", family: "眼镜蛇科", risk: "高危", toxicity: "有毒", venomClass: "myo",
+    venomType: "神经毒为主，兼有肌毒作用", toxinSystem: "影响神经肌肉传递并可能损伤横纹肌",
+    tag: "两栖海蛇", accent: "#447888", provinces: ["福建", "广东", "海南", "台湾", "香港"],
+    note: "具有桨状尾，可上岸休息或产卵；不要在礁石、海滩或渔具中徒手接触。", symptoms: seaSymptoms,
+    medicalNote: "伤口可能不明显，但肌无力、呼吸障碍或深色尿均提示需要紧急救治。",
+  },
+  {
+    id: "ahaetulla-prasina", name: "绿瘦蛇", latin: "Ahaetulla prasina", family: "游蛇科", risk: "需警惕", toxicity: "后沟牙有毒", venomClass: "rear",
+    venomType: "后沟牙弱毒，局部作用为主", toxinSystem: "主要作用于小型猎物，对人通常仅造成局部反应",
+    tag: "极细树栖", accent: "#5d9551", provinces: ["福建", "广东", "广西", "海南", "贵州", "云南", "香港"],
+    note: "身体极细、吻部尖长，常静伏于灌木和树枝；不能因为头部狭长就判断为无毒。", symptoms: mildRearSymptoms,
+    medicalNote: "严重全身中毒并非常见表现，但持续肿胀、过敏反应或蛇种不明时仍应就医。",
+  },
+  {
+    id: "psammodynastes-pulverulentus", name: "紫沙蛇", latin: "Psammodynastes pulverulentus", family: "水游蛇科", risk: "需警惕", toxicity: "后沟牙有毒", venomClass: "rear",
+    venomType: "后沟牙弱毒", toxinSystem: "对小型猎物有效，人被咬后通常以局部症状为主",
+    tag: "拟蝰外形", accent: "#806452", provinces: ["浙江", "福建", "江西", "湖南", "广东", "广西", "海南", "贵州", "四川", "云南", "西藏", "香港"],
+    note: "头部较宽、体色多变，受威胁时外观容易让人联想到小型蝰蛇。", symptoms: mildRearSymptoms,
+    medicalNote: "通常不会造成典型严重蛇毒中毒，但不能在现场仅凭体型小而放松处理。",
+  },
+  {
+    id: "boiga-kraepelini", name: "绞花林蛇", latin: "Boiga kraepelini", family: "游蛇科", risk: "需警惕", toxicity: "后沟牙有毒", venomClass: "rear",
+    venomType: "后沟牙弱毒", toxinSystem: "主要用于制服蜥蜴和鸟类，人类咬伤多为局部反应",
+    tag: "夜行树栖", accent: "#866b4f", provinces: ["浙江", "安徽", "江西", "福建", "湖南", "广东", "广西", "海南", "贵州", "四川", "云南", "台湾"],
+    note: "夜间常在林缘和树上活动，眼较大；被长时间咬住时应避免徒手拉扯。", symptoms: mildRearSymptoms,
+    medicalNote: "目前通常视为医学风险较低的后沟牙蛇，但咬伤仍应清洁并观察局部变化。",
+  },
+  {
+    id: "ptyas-mucosa", name: "滑鼠蛇", latin: "Ptyas mucosa", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "大型无毒鼠蛇，依靠速度、咬合和缠压捕食",
+    tag: "大型鼠蛇", accent: "#79704f", provinces: ["福建", "江西", "湖南", "广东", "广西", "海南", "四川", "贵州", "云南", "西藏", "香港", "澳门"],
+    note: "行动迅速，常活动于农田、村落和水域附近；受逼迫时可能抬起前身并猛烈防御。", symptoms: nonVenomSymptoms,
+    medicalNote: "无蛇毒中毒风险，但大型个体咬伤可较深，需清创并评估破伤风免疫。",
+  },
+  {
+    id: "ptyas-korros", name: "灰鼠蛇", latin: "Ptyas korros", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "无毒牙系统，主要捕食鼠类、蛙和蜥蜴",
+    tag: "南方常见", accent: "#737b68", provinces: ["浙江", "江西", "福建", "湖南", "广东", "广西", "海南", "贵州", "四川", "云南", "台湾", "香港", "澳门"],
+    note: "体形细长、活动迅速，常见于南方农田、林缘和居民点周边。", symptoms: nonVenomSymptoms,
+    medicalNote: "不会造成蛇毒中毒；不要因其无毒而追逐或徒手捕捉。",
+  },
+  {
+    id: "elaphe-schrenckii", name: "棕黑锦蛇", latin: "Elaphe schrenckii", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "大型无毒蛇，以鼠类和鸟类为食",
+    tag: "东北大型蛇", accent: "#66543e", provinces: ["辽宁", "吉林", "黑龙江"],
+    note: "我国主要分布于东北，成体和幼体花纹差异较大，是很适合做年龄变化科普的蛇种。", symptoms: nonVenomSymptoms,
+    medicalNote: "无蛇毒中毒风险，但大型个体的防御性咬伤仍可造成较深创口。",
+  },
+  {
+    id: "elaphe-moellendorffi", name: "百花锦蛇", latin: "Elaphe moellendorffi", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "无毒牙系统",
+    tag: "两广石山", accent: "#a0604d", provinces: ["广东", "广西"],
+    note: "主要见于两广石灰岩山地及附近灌丛，花纹醒目但并不表示有毒。", symptoms: nonVenomSymptoms,
+    medicalNote: "不会引起蛇毒中毒；野外观察应避免翻石追赶和干扰隐蔽个体。",
+  },
+  {
+    id: "lycodon-ruhstrati", name: "黑背白环蛇", latin: "Lycodon ruhstrati", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无医学显著蛇毒注入", toxinSystem: "无毒牙系统，常捕食壁虎和小型爬行动物",
+    tag: "易混银环蛇", accent: "#4f5960", provinces: ["江苏", "安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "海南", "贵州", "四川", "云南", "陕西", "台湾"],
+    note: "夜行且常出现在墙边或石缝，黑白花纹容易使人联想到银环蛇。", symptoms: nonVenomSymptoms,
+    medicalNote: "本种无毒，但黑白环纹蛇现场误判代价很高，无法确认时应保持距离。",
+  },
+  {
+    id: "lycodon-septentrionalis", name: "白链蛇", latin: "Lycodon septentrionalis", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无医学显著蛇毒注入", toxinSystem: "无毒牙系统",
+    tag: "山地夜行", accent: "#64665e", provinces: ["江苏", "浙江", "安徽", "江西", "福建", "湖南", "广东", "广西", "海南", "贵州", "重庆", "四川", "云南", "西藏", "甘肃", "台湾"],
+    note: "多在夜间活动，身体的浅色横带可能不完整，常与其他白环蛇或银环蛇混淆。", symptoms: nonVenomSymptoms,
+    medicalNote: "无蛇毒中毒风险，但公众不应仅凭浅色横带是否闭合来抓取鉴定。",
+  },
+  {
+    id: "pareas-chinensis", name: "中国钝头蛇", latin: "Pareas chinensis", family: "钝头蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "无毒牙系统，牙齿和颌部适合取食蜗牛与蛞蝓",
+    tag: "食蜗牛", accent: "#8b785f", provinces: ["江苏", "浙江", "安徽", "江西", "福建", "湖北", "湖南", "广东", "广西", "重庆", "四川", "贵州", "云南", "陕西", "甘肃"],
+    note: "体型小、头钝、眼大，夜间在潮湿林地和灌丛活动，是生态习性很有特色的无毒蛇。", symptoms: nonVenomSymptoms,
+    medicalNote: "不会造成蛇毒中毒；观察时不要搬动个体或破坏其潮湿微生境。",
+  },
+  {
+    id: "malayopython-bivittatus", name: "缅甸蟒", latin: "Python bivittatus", family: "蟒科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "大型缠绕型蛇类，依靠咬合和缠绕制服猎物",
+    tag: "国家重点保护", accent: "#9a7654", provinces: ["福建", "广东", "广西", "海南", "云南", "香港"],
+    note: "我国野外种群主要位于南方，属于受保护野生动物；大型个体应由专业人员处置。", symptoms: nonVenomSymptoms,
+    medicalNote: "没有蛇毒，但大型个体咬合和缠绕可造成严重机械性损伤，切勿靠近围堵。",
+  },
+  {
+    id: "trimerodytes-annularis", name: "水赤链游蛇", latin: "Trimerodytes annularis", family: "水游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无医学显著蛇毒注入", toxinSystem: "通常按无毒蛇处理，主要捕食鱼和蛙",
+    tag: "近水活动", accent: "#74684f", provinces: ["江苏", "安徽", "浙江", "江西", "福建", "湖北", "湖南", "广东", "广西", "海南", "重庆", "四川", "贵州", "云南", "台湾"],
+    note: "常活动于池塘、沟渠和稻田附近，棕红色横斑可能使其被误认为其他赤链状蛇。", symptoms: nonVenomSymptoms,
+    medicalNote: "通常不导致蛇毒中毒，但水边发现的蛇不应徒手捞取或堵截。",
+  },
+  {
+    id: "orientocoluber-spinalis", name: "黄脊游蛇", latin: "Orientocoluber spinalis", family: "游蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "无毒牙系统，以蜥蜴等小型动物为食",
+    tag: "北方纵纹", accent: "#8c8252", provinces: ["北京", "天津", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", "江苏", "山东", "河南", "陕西", "甘肃", "新疆"],
+    note: "主要见于北方开阔地、山麓和河床附近，背中线的浅黄色纵纹较醒目。", symptoms: nonVenomSymptoms,
+    medicalNote: "无蛇毒中毒风险；与白条锦蛇是不同物种，不能只看一条浅色纵纹命名。",
+  },
+  {
+    id: "achalinus-spinalis", name: "黑脊蛇", latin: "Achalinus spinalis", family: "闪皮蛇科", risk: "无毒", toxicity: "无毒", venomClass: "none",
+    venomType: "无蛇毒注入", toxinSystem: "无毒牙系统，穴居并捕食蚯蚓等小型动物",
+    tag: "虹彩鳞片", accent: "#555f62", provinces: ["江苏", "浙江", "安徽", "江西", "福建", "湖北", "湖南", "广西", "重庆", "四川", "贵州", "云南", "陕西", "甘肃"],
+    note: "常隐藏在湿润土壤、石块和腐殖层下，光照下鳞片可呈虹彩光泽。", symptoms: nonVenomSymptoms,
+    medicalNote: "不会造成蛇毒中毒；穴居蛇对环境扰动敏感，发现后不应挖掘追捕。",
   },
 ];
 
@@ -390,7 +529,7 @@ export const snakeAppearances: Record<string, SnakeAppearance> = {
     distinguishing: "红黑相间、身体较圆，头部和颈部区分不强；花纹随地区和年龄变化。",
     lookalikes: "可能与珊瑚蛇类或其他环纹蛇混淆。红黑配色不能用作安全判断。",
   },
-  "orientocoluber-spinalis": {
+  "elaphe-dione": {
     appearance: "体形细长，灰褐或黄褐底色，背部中央通常有一条浅色纵纹，两侧伴深色斑点或短横斑，头后可见深色纹。",
     distinguishing: "贯穿背部的浅色纵纹较典型，尾巴长而尖。",
     lookalikes: "幼体可与其他带纵纹或斑点的锦蛇混淆，通常不会与规则环纹的银环蛇相同。",
@@ -399,6 +538,101 @@ export const snakeAppearances: Record<string, SnakeAppearance> = {
     appearance: "小到中型，灰褐或黄褐底色上有两列深褐色椭圆斑或横斑，头部有深色矛形纹，腹面常有黑白斑。",
     distinguishing: "两列背斑和较纤细体形较典型，但幼体斑纹更鲜明。",
     lookalikes: "可与短尾蝮等带圆斑蛇混淆。头形并不可靠，应结合体形、鳞片和专业意见。",
+  },
+  "sinomicrurus-macclellandi": {
+    appearance: "体形细小，头部多为黑色并有浅色横带，身体红褐、橙红或棕红色，排列多条黑色横带；黑带边缘常伴较窄浅色线。",
+    distinguishing: "头颈区分不明显、尾较短，环纹组合具有提示性，但不同地区个体的红色深浅和带纹宽度差异明显。",
+    lookalikes: "可与赤链蛇、部分小头蛇等红黑斑纹无毒蛇混淆。无法确认的红黑环纹蛇一律不要接触。",
+  },
+  "protobothrops-jerdonii": {
+    appearance: "体形粗壮，底色黄褐、灰褐或橄榄褐，背面排列深色近方形、梯形或交错斑块，头侧有明显深色带。",
+    distinguishing: "背斑常让人联想到碎花或菜花图案，头部宽大，体表与高山碎石和落叶环境高度融合。",
+    lookalikes: "与高原蝮、山烙铁头蛇及其他褐色蝰蛇相似，普通照片往往不能可靠鉴别到种。",
+  },
+  "gloydius-strauchi": {
+    appearance: "体形短粗，灰褐、棕褐或橄榄色底上排列深色横斑，头顶可有对称斑纹，眼后向口角延伸深色条带。",
+    distinguishing: "常见个体色调偏暗，身体适合高原石质背景；可靠区分需要鳞片、地理和分类信息。",
+    lookalikes: "与中介蝮及其他蝮属蛇高度相似，不能按海拔或照片背景直接确定物种。",
+  },
+  "vipera-berus": {
+    appearance: "体形较短粗，背部常有连续深色锯齿状纵带，底色可从浅灰、褐色到红褐变化，也有几乎通体黑色的个体。",
+    distinguishing: "典型锯齿带较醒目，但黑化个体可能完全看不见；头后常见深色 V 形或 X 形纹。",
+    lookalikes: "可与新疆其他蝰蛇以及带锯齿纹的无毒蛇混淆，体色和单一背纹都不是充分证据。",
+  },
+  "laticauda-laticaudata": {
+    appearance: "身体蓝灰或灰白，具有规则的深蓝黑色宽环，头部多为黑色，吻部和上唇可偏黄；尾部明显侧扁呈桨状。",
+    distinguishing: "腹部具有较宽腹鳞，能在陆地爬行；桨状尾提示其海生适应，但不能借此与所有海蛇精确分种。",
+    lookalikes: "与其他扁尾海蛇和环纹海蛇相似。海边发现的任何黑蓝环纹、桨状尾蛇均应保持距离。",
+  },
+  "ahaetulla-prasina": {
+    appearance: "身体极为细长，通常鲜绿或黄绿色，也有褐色型；吻端尖长，头部呈狭长箭头形，眼大且常见水平瞳孔。",
+    distinguishing: "长而尖的吻部、极细身体和树枝状姿态组合明显，受威胁时可能鼓起前段露出鳞间黑白纹。",
+    lookalikes: "常与翠青蛇和绿色竹叶青混淆。绿瘦蛇身体更细、吻更尖，但不要靠近查看瞳孔。",
+  },
+  "psammodynastes-pulverulentus": {
+    appearance: "小型蛇，体色可为灰褐、红褐或紫褐，背部有不规则深斑；头部较宽、吻略上翘，眼后常有深色线。",
+    distinguishing: "体型虽小却有类似蝰蛇的宽头和短促防御姿态，花纹与落叶背景非常接近。",
+    lookalikes: "容易被误认为幼年蝮蛇，也可能与小型无毒游蛇混淆；不要依靠三角头作判断。",
+  },
+  "boiga-kraepelini": {
+    appearance: "体形细长，头大于颈部，眼睛较大；黄褐或灰褐底色上有深色不规则横带，身体后段的带纹常更紧密。",
+    distinguishing: "夜行树栖姿态、较大眼睛和细长身体是常见组合，幼体斑纹通常比成体清晰。",
+    lookalikes: "可与繁花林蛇以及多种锦蛇幼体混淆，普通照片难以依靠横带数量可靠区分。",
+  },
+  "ptyas-mucosa": {
+    appearance: "大型修长蛇，头部略宽，眼较大；前半身黄褐、橄榄褐或棕色，后半身鳞片边缘常形成深浅相间的网格或横纹。",
+    distinguishing: "尾很长、行动迅速，成体后半身常呈明显黑黄网纹；受威胁时可能抬高前身，但不会形成真正颈罩。",
+    lookalikes: "抬起前身时可能被误认成眼镜蛇，亦与灰鼠蛇相似。是否扩颈不能作为单一鉴别依据。",
+  },
+  "ptyas-korros": {
+    appearance: "体形细长，背面多为较均匀的橄榄灰、黄褐或棕灰色，鳞片边缘可呈细密暗色网纹，腹面淡黄。",
+    distinguishing: "整体颜色比滑鼠蛇更均匀，身体和尾部纤长，眼后有时可见短暗纹。",
+    lookalikes: "与滑鼠蛇、乌梢蛇和其他鼠蛇容易混淆，体色受光线影响很大。",
+  },
+  "elaphe-schrenckii": {
+    appearance: "成体大型粗壮，棕黑或黑色背面排列黄色至乳黄色窄横斑；幼体底色较浅、白色横斑和头部浅色纹更加突出。",
+    distinguishing: "东北分布、黑黄相间的成体和明显的年龄变色很有特点，腹面常带黑白斑。",
+    lookalikes: "幼体与赤峰锦蛇等斑纹锦蛇相似，成体也可能被误认为大型环纹毒蛇。",
+  },
+  "elaphe-moellendorffi": {
+    appearance: "头部常呈红褐色，灰白、淡褐或粉褐底色上排列黑边红褐色大斑，斑块形状复杂而醒目。",
+    distinguishing: "大型鞍斑、偏红的头部和两广石灰岩生境可提供线索，身体整体不像真正完整环纹。",
+    lookalikes: "可能与玉斑锦蛇及其他花纹锦蛇混淆，可靠鉴别仍需结合头部纹样和鳞片。",
+  },
+  "lycodon-ruhstrati": {
+    appearance: "身体黑色或深褐色，具有数量较多的白色、灰白或淡黄色窄横带；浅带常在体侧分叉、变窄或在腹面中断。",
+    distinguishing: "身体横切面通常较圆，背脊中央鳞片不呈银环蛇那样明显扩大的六角形，浅带也常不够整齐。",
+    lookalikes: "最重要的是与银环蛇区别。现场看不清背脊鳞和环带是否闭合时，应直接按银环蛇风险处理。",
+  },
+  "lycodon-septentrionalis": {
+    appearance: "体形细长，深褐或黑色背面分布白色至浅黄色横带，横带常在身体前段较明显，头部可有浅色斑。",
+    distinguishing: "浅带边缘往往不规则，常不完全包围腹面；不同年龄和地区个体差异较大。",
+    lookalikes: "可与黑背白环蛇、银环蛇及其他白环蛇混淆，不能根据环纹不完整就断言无毒。",
+  },
+  "pareas-chinensis": {
+    appearance: "小型细长蛇，头部钝圆、眼睛较大，黄褐至棕褐色身体带有深色斜纹或细横纹，腹面较浅。",
+    distinguishing: "头钝、眼大、身体细弱且常在夜间缓慢攀爬；颌部不对称适合从蜗牛壳中取食软体。",
+    lookalikes: "与其他钝头蛇外观相近，准确分种常需看鳞片和分布；通常不易与粗壮蝰蛇混同。",
+  },
+  "malayopython-bivittatus": {
+    appearance: "大型粗壮蛇，黄褐或灰褐底色上覆盖一系列黑褐色、浅边的大型云状斑，头顶有明显箭头状深纹。",
+    distinguishing: "巨大体型、云状大斑和唇部热感窝组合较典型，幼体也具有相似花纹。",
+    lookalikes: "幼体可能与其他大型斑纹蛇混淆；无毒不等于无危险，不能围堵或尝试徒手搬移。",
+  },
+  "trimerodytes-annularis": {
+    appearance: "体形中等，背面棕褐、红褐或橄榄色，排列深色横斑或环状斑，腹面淡黄并常带深色点斑。",
+    distinguishing: "常在水边活动，身体较圆长，红褐横斑通常不像赤链蛇那样形成强烈红黑对比。",
+    lookalikes: "可与赤链蛇、其他水游蛇以及幼年蝮蛇混淆，水生习性不能证明无毒。",
+  },
+  "orientocoluber-spinalis": {
+    appearance: "体形细长，灰褐、橄榄褐或黄褐色背面中央有一条浅黄至黄白色纵纹，两侧可伴较暗纵线或细斑。",
+    distinguishing: "贯穿背中线的黄色细纹较有代表性，头后常见深色纹，尾长而尖。",
+    lookalikes: "与白条锦蛇名称容易混淆，但白条锦蛇通常还有多条浅纵纹和不规则黑横斑；不要仅按俗名辨认。",
+  },
+  "achalinus-spinalis": {
+    appearance: "小型细长蛇，背面黑褐、紫褐或深灰，鳞片在光线下呈蓝紫虹彩；背中线常有一条细黑线，腹面较浅。",
+    distinguishing: "鳞片颗粒感和虹彩光泽较突出，头部小而与颈部区分不明显，尾部细长。",
+    lookalikes: "可与其他脊蛇和小型穴居蛇混淆；光泽受拍摄角度影响，不能作为唯一鉴别点。",
   },
 };
 

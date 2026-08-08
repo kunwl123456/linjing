@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as echarts from "echarts";
-import { ChinaData } from "china-map-geojson";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { snakeAppearances, snakes, venomFilters } from "./snake-data";
+import { snakeImages } from "./snake-images";
+
+const ChinaMap = lazy(() => import("./china-map"));
 
 const provinces = [
   { name: "新疆", x: 11, y: 31 }, { name: "西藏", x: 20, y: 61 },
@@ -25,99 +26,9 @@ const provinces = [
   { name: "海南", x: 55, y: 96 }, { name: "台湾", x: 77, y: 85 },
 ];
 
-type ChinaMapProps = {
-  highlighted: string[];
-  selectedProvince: string;
-  mode: "snake" | "province";
-  onProvinceClick: (name: string) => void;
-};
-
-function ChinaMap({ highlighted, selectedProvince, mode, onProvinceClick }: ChinaMapProps) {
-  const elementRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<echarts.ECharts | null>(null);
-  const clickRef = useRef(onProvinceClick);
-  clickRef.current = onProvinceClick;
-
-  useEffect(() => {
-    if (!elementRef.current) return;
-    echarts.registerMap("china-provinces", ChinaData as never);
-    const chart = echarts.init(elementRef.current, undefined, { renderer: "canvas" });
-    chartRef.current = chart;
-    chart.on("click", (params) => {
-      if (typeof params.name === "string" && params.name) clickRef.current(params.name);
-    });
-    const resize = () => chart.resize();
-    window.addEventListener("resize", resize);
-    return () => {
-      window.removeEventListener("resize", resize);
-      chart.dispose();
-      chartRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    const names = (ChinaData as { features: Array<{ properties: { name: string } }> }).features.map(
-      (feature) => feature.properties.name,
-    );
-    chart.setOption({
-      backgroundColor: "transparent",
-      tooltip: {
-        trigger: "item",
-        backgroundColor: "#152018",
-        borderWidth: 0,
-        padding: [8, 11],
-        textStyle: { color: "#f3f0e8", fontSize: 11 },
-        formatter: (params: { name: string }) => {
-          const count = snakes.filter((snake) => snake.provinces.includes(params.name)).length;
-          return `<b>${params.name}</b><br/><span style="color:#aeb6ad">原型收录 ${count} 种 · 点击查看</span>`;
-        },
-      },
-      series: [
-        {
-          type: "map",
-          map: "china-provinces",
-          roam: true,
-          scaleLimit: { min: 1, max: 4 },
-          zoom: 1.04,
-          top: 35,
-          bottom: 38,
-          left: 30,
-          right: 30,
-          selectedMode: false,
-          label: {
-            show: true,
-            color: "#475249",
-            fontSize: 9,
-            fontFamily: "Arial, Microsoft YaHei, sans-serif",
-          },
-          itemStyle: {
-            areaColor: "#ded9cc",
-            borderColor: "#69756d",
-            borderWidth: 0.75,
-          },
-          emphasis: {
-            label: { show: true, color: "#152018", fontWeight: "bold" },
-            itemStyle: { areaColor: "#b8cf65", borderColor: "#152018", borderWidth: 1.5 },
-          },
-          data: names.map((name) => {
-            const active = mode === "province" ? name === selectedProvince : highlighted.includes(name);
-            return {
-              name,
-              itemStyle: active
-                ? { areaColor: "#c8dc78", borderColor: "#234b34", borderWidth: 1.15 }
-                : undefined,
-              label: active ? { color: "#152018", fontWeight: "bold" } : undefined,
-            };
-          }),
-        },
-      ],
-    });
-  }, [highlighted, mode, selectedProvince]);
-
-  return <div className="china-map-chart" ref={elementRef} role="img" aria-label="中国省级行政区交互地图" />;
-}
+const provinceCounts = Object.fromEntries(
+  provinces.map(({ name }) => [name, snakes.filter((snake) => snake.provinces.includes(name)).length]),
+);
 
 export default function Home() {
   const [activeSnakeId, setActiveSnakeId] = useState(snakes[0].id);
@@ -125,14 +36,33 @@ export default function Home() {
   const [mode, setMode] = useState<"snake" | "province">("snake");
   const [query, setQuery] = useState("");
   const [venomFilter, setVenomFilter] = useState<(typeof venomFilters)[number]>("全部");
+  const [mapReady, setMapReady] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+
+  useEffect(() => {
+    const windowWithIdle = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    if (windowWithIdle.requestIdleCallback) {
+      const handle = windowWithIdle.requestIdleCallback(() => setMapReady(true), { timeout: 700 });
+      return () => windowWithIdle.cancelIdleCallback?.(handle);
+    }
+    const handle = window.setTimeout(() => setMapReady(true), 120);
+    return () => window.clearTimeout(handle);
+  }, []);
 
   const activeSnake = snakes.find((snake) => snake.id === activeSnakeId) ?? snakes[0];
   const activeAppearance = snakeAppearances[activeSnake.id];
+  const activeImages = snakeImages[activeSnake.id] ?? [];
+  const activeImage = activeImages[imageIndex] ?? activeImages[0];
+
+  useEffect(() => setImageIndex(0), [activeSnakeId]);
   const provinceSnakes = useMemo(
     () => snakes.filter((snake) => snake.provinces.includes(activeProvince)),
     [activeProvince],
   );
-  const filteredSnakes = snakes.filter((snake) => {
+  const filteredSnakes = useMemo(() => snakes.filter((snake) => {
     const filterMatch = venomFilter === "全部"
       || (venomFilter === "神经毒" && snake.venomClass === "neuro")
       || (venomFilter === "血液/细胞毒" && snake.venomClass === "hemo")
@@ -141,9 +71,9 @@ export default function Home() {
       || (venomFilter === "后沟牙" && snake.venomClass === "rear")
       || (venomFilter === "无毒" && snake.venomClass === "none");
     const searchMatch = `${snake.name}${snake.latin}${snake.tag}${snake.venomType}${snake.toxicity}`
-      .toLowerCase().includes(query.toLowerCase());
+      .toLowerCase().includes(query.trim().toLowerCase());
     return filterMatch && searchMatch;
-  });
+  }), [query, venomFilter]);
 
   function chooseSnake(id: string) {
     setActiveSnakeId(id);
@@ -227,12 +157,17 @@ export default function Home() {
 
           <div className="map-wrap" aria-label="中国省级毒蛇分布交互示意图">
             <div className="map-caption"><b>省级行政区地图</b><span>滚轮缩放 · 拖动查看 · 点击省份</span></div>
-            <ChinaMap
-              highlighted={activeSnake.provinces}
-              selectedProvince={activeProvince}
-              mode={mode}
-              onProvinceClick={chooseProvince}
-            />
+            {mapReady ? (
+              <Suspense fallback={<div className="map-loading" role="status">正在加载地图…</div>}>
+                <ChinaMap
+                  highlighted={activeSnake.provinces}
+                  selectedProvince={activeProvince}
+                  mode={mode}
+                  provinceCounts={provinceCounts}
+                  onProvinceClick={chooseProvince}
+                />
+              </Suspense>
+            ) : <div className="map-loading" role="status">正在准备地图…</div>}
             <div className="legend"><span><i className="confirmed" />演示记录</span><span><i />暂未收录</span></div>
             <div className="map-data-note">公开 GeoJSON 绘制 · 边界仅用于交互原型</div>
           </div>
@@ -247,6 +182,60 @@ export default function Home() {
               <p className="latin">{activeSnake.latin}</p>
               <div className="tags"><span>{activeSnake.family}</span><span>{activeSnake.tag}</span><span className={activeSnake.risk === "无毒" ? "safe-tag" : "danger"}>{activeSnake.risk}</span></div>
               <p className="description">{activeSnake.note}</p>
+              {activeImage ? (
+                <figure className="snake-photo-card">
+                  <div className="snake-photo-frame">
+                    <picture>
+                      <source srcSet={activeImage.avif} type="image/avif" />
+                      <img
+                        key={activeImage.webp}
+                        src={activeImage.webp}
+                        alt={activeImage.alt}
+                        width="720"
+                        height="540"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                    <span>{activeImage.badge}</span>
+                    {activeImages.length > 1 && (
+                      <div className="photo-arrows">
+                        <button
+                          aria-label="上一张蛇类照片"
+                          onClick={() => setImageIndex((imageIndex - 1 + activeImages.length) % activeImages.length)}
+                        >←</button>
+                        <button
+                          aria-label="下一张蛇类照片"
+                          onClick={() => setImageIndex((imageIndex + 1) % activeImages.length)}
+                        >→</button>
+                      </div>
+                    )}
+                  </div>
+                  <figcaption>
+                    <div><b>{activeImage.location}</b><span>{String(imageIndex + 1).padStart(2, "0")} / {String(activeImages.length).padStart(2, "0")} · {activeImage.observedAt}</span></div>
+                    <p>
+                      摄影：{activeImage.photographer} · <a href={activeImage.licenseUrl} target="_blank" rel="noreferrer">{activeImage.license}</a>
+                      <a className="observation-link" href={activeImage.observationUrl} target="_blank" rel="noreferrer">核对原始来源 ↗</a>
+                    </p>
+                    {activeImages.length > 1 && (
+                      <div className="photo-pagination" aria-label="选择蛇类照片">
+                        {activeImages.map((image, index) => (
+                          <button
+                            key={image.webp}
+                            className={index === imageIndex ? "on" : ""}
+                            aria-label={`查看第 ${index + 1} 张照片`}
+                            aria-current={index === imageIndex ? "true" : undefined}
+                            onClick={() => setImageIndex(index)}
+                          >{String(index + 1).padStart(2, "0")}</button>
+                        ))}
+                      </div>
+                    )}
+                    <small>物种、地点与许可已于 {activeImage.reviewedAt} 复核。照片仅作形态参考，不用于现场近距离鉴定。</small>
+                  </figcaption>
+                </figure>
+              ) : (
+                <div className="photo-pending"><b>暂未采用图片</b><span>尚未找到同时满足物种复核、地点记录和开放许可的照片。</span></div>
+              )}
               <section className="appearance-section">
                 <div className="section-label"><span>外观与远距离辨识</span><i>不可作为徒手鉴蛇依据</i></div>
                 <p className="appearance-copy">{activeAppearance.appearance}</p>
