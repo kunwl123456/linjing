@@ -218,7 +218,8 @@ footer > span { font-size: 8px; letter-spacing: .12em; }
   .prototype-pill i { margin: 0; }
   .hero { grid-template-columns: 1fr; padding: 38px 22px; min-height: 310px; }
   .eyebrow { writing-mode: initial; padding: 0; }
-  .hero h1 { font-size: 44px; line-height: 1.08; }
+  .hero h1 { font-size: clamp(36px, 10.2vw, 44px); line-height: 1.08; overflow-wrap: anywhere; word-break: break-all; }
+  .hero h1 em { display: block; }
   .hero-stat { justify-self: start; }
   .atlas { display: flex; flex-direction: column; }
   .species-panel { border-right: 0; }
